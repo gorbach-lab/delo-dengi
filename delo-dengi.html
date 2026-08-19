@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Дело № ДЕНЬГИ — мини-расследование</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Merriweather:ital,wght@0,400;0,700;1,400&family=PT+Mono&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --kraft:#cdb890;
+    --kraft-dark:#b7a179;
+    --kraft-darker:#8f7c58;
+    --paper:#efe4c8;
+    --paper-2:#e6d8b5;
+    --ink:#2b2620;
+    --ink-soft:#4a4335;
+    --red:#a13a2e;
+    --red-bright:#c04a3a;
+    --line: rgba(43,38,32,0.18);
+  }
+  *{box-sizing:border-box;}
+  @media (prefers-reduced-motion: reduce){ *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; } }
+
+  html,body{
+    margin:0; padding:0;
+    background:
+      radial-gradient(ellipse at 20% 0%, rgba(255,255,255,0.12), transparent 55%),
+      radial-gradient(ellipse at 100% 100%, rgba(0,0,0,0.14), transparent 55%),
+      var(--kraft);
+    color:var(--ink);
+    font-family:'Merriweather', serif;
+    min-height:100vh;
+  }
+
+  .stage{ min-height:100vh; display:flex; align-items:flex-start; justify-content:center; padding:44px 16px 60px; }
+
+  .folder{
+    width:100%; max-width:640px;
+    position:relative;
+  }
+
+  .folder-tab{
+    display:inline-block;
+    background:var(--kraft-darker);
+    color:var(--paper);
+    font-family:'Oswald', sans-serif;
+    font-weight:600;
+    font-size:12px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    padding:7px 22px 9px;
+    border-radius:6px 6px 0 0;
+    margin-left:26px;
+    box-shadow: 0 -2px 0 rgba(0,0,0,0.08) inset;
+  }
+
+  .folder-body{
+    background:var(--paper);
+    border-radius:4px 12px 12px 12px;
+    box-shadow: 0 22px 45px rgba(30,24,14,0.28), 0 2px 0 rgba(255,255,255,0.4) inset;
+    padding:28px 26px 32px;
+    position:relative;
+    border:1px solid var(--line);
+  }
+
+  .stamp{
+    position:absolute;
+    top:22px; right:22px;
+    border:3px solid var(--red);
+    color:var(--red);
+    font-family:'Oswald', sans-serif;
+    font-weight:700;
+    font-size:12.5px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    padding:6px 10px;
+    border-radius:6px;
+    transform:rotate(8deg);
+    opacity:0.85;
+    background:rgba(161,58,46,0.06);
+  }
+
+  .case-header{ margin-bottom:8px; padding-right:110px; }
+  .case-number{
+    font-family:'PT Mono', monospace;
+    font-size:11.5px;
+    letter-spacing:0.12em;
+    color:var(--ink-soft);
+    text-transform:uppercase;
+  }
+  h1.case-title{
+    font-family:'Oswald', sans-serif;
+    font-weight:700;
+    font-size:clamp(22px,5.5vw,28px);
+    line-height:1.25;
+    margin:6px 0 4px;
+    color:var(--ink);
+  }
+  .case-subtitle{
+    font-style:italic;
+    font-size:15px;
+    color:var(--ink-soft);
+    margin:0 0 18px;
+  }
+
+  .divider-dashed{
+    border:none;
+    border-top:2px dashed var(--kraft-dark);
+    margin:18px 0;
+  }
+
+  .case-field{
+    font-size:14.5px;
+    line-height:1.6;
+    margin-bottom:10px;
+  }
+  .case-field b{
+    font-family:'PT Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--red);
+    display:block;
+    margin-bottom:3px;
+  }
+
+  .lede{ font-size:15.5px; line-height:1.7; margin:0 0 14px; }
+
+  .disclaimer{
+    font-family:'PT Mono', monospace; font-size:10.5px; line-height:1.6;
+    color:var(--ink-soft); border-left:2px solid var(--kraft-dark);
+    padding-left:10px; margin:18px 0 22px;
+  }
+
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px; width:100%;
+    font-family:'Oswald', sans-serif; font-weight:600; font-size:15px; letter-spacing:0.02em;
+    padding:15px 20px; border-radius:8px; border:2px solid var(--ink); cursor:pointer;
+    background:var(--ink); color:var(--paper);
+    transition: transform 0.15s ease, background 0.15s ease;
+  }
+  .btn:hover{ background:#3a352b; }
+  .btn:active{ transform:scale(0.98); }
+  .btn:focus-visible{ outline:2px solid var(--red); outline-offset:3px; }
+
+  .btn-secondary{
+    background:transparent; color:var(--ink); border-color:var(--ink-soft);
+    font-size:13px; padding:12px 16px;
+  }
+  .btn-secondary:hover{ background:rgba(43,38,32,0.06); }
+
+  /* progress */
+  .progress-row{ margin-bottom:18px; }
+  .progress-label{
+    font-family:'PT Mono', monospace; font-size:11px; letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--ink-soft); margin-bottom:8px; display:block;
+  }
+  .progress-ticks{ display:flex; gap:5px; }
+  .ptick{ flex:1; height:5px; border-radius:3px; background:rgba(43,38,32,0.15); overflow:hidden; }
+  .ptick.filled{ background:var(--red); }
+
+  /* evidence */
+  .evidence-label{
+    font-family:'Oswald', sans-serif; font-weight:700; font-size:13px; letter-spacing:0.1em;
+    text-transform:uppercase; color:var(--red); margin-bottom:6px;
+  }
+  .evidence-q{
+    font-size:19px; line-height:1.45; font-weight:700; margin:0 0 16px; color:var(--ink);
+  }
+
+  .checklist{ display:flex; flex-direction:column; gap:8px; margin-bottom:16px; }
+  .check-row{
+    display:flex; align-items:flex-start; gap:11px;
+    background:var(--paper-2);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:11px 13px;
+    cursor:pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  .check-row:hover{ background:#ddceaa; border-color:var(--kraft-dark); }
+  .check-row.checked{ background:#e3d5ab; border-color:var(--red); }
+  .check-box{
+    flex:none; width:19px; height:19px; margin-top:2px;
+    border:2px solid var(--ink-soft); border-radius:4px;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--paper);
+  }
+  .check-row.checked .check-box{ background:var(--red); border-color:var(--red); }
+  .check-box svg{ display:none; width:12px; height:12px; }
+  .check-row.checked .check-box svg{ display:block; }
+  .check-text{ font-size:14.5px; line-height:1.5; }
+
+  .cat-note{
+    background:rgba(161,58,46,0.07);
+    border:1px dashed var(--red);
+    border-radius:8px;
+    padding:12px 14px;
+    font-size:13.5px;
+    font-style:italic;
+    line-height:1.55;
+    margin-bottom:20px;
+    color:var(--ink-soft);
+  }
+  .cat-note .paw{ margin-right:6px; }
+
+  /* result */
+  .verdict-stamp{
+    display:inline-block;
+    border:3px solid var(--red);
+    color:var(--red);
+    font-family:'Oswald', sans-serif;
+    font-weight:700;
+    font-size:13px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    padding:6px 14px;
+    border-radius:6px;
+    transform:rotate(-3deg);
+    margin-bottom:14px;
+  }
+
+  h2.result-title{
+    font-family:'Oswald', sans-serif; font-weight:700; font-size:clamp(20px,5.5vw,25px);
+    margin:4px 0 6px; color:var(--ink);
+  }
+  .result-sub{ font-size:14px; color:var(--ink-soft); margin:0 0 20px; }
+
+  .suspect-hero{
+    background:var(--paper-2);
+    border:2px solid var(--ink);
+    border-radius:10px;
+    padding:18px 18px 16px;
+    margin-bottom:20px;
+  }
+  .suspect-hero-label{
+    font-family:'PT Mono', monospace; font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase;
+    color:var(--red); margin-bottom:8px; display:block;
+  }
+  .suspect-hero-name{
+    font-family:'Oswald', sans-serif; font-weight:700; font-size:20px; margin:0 0 8px; color:var(--ink);
+  }
+  .suspect-hero-quote{ font-style:italic; font-size:15px; line-height:1.6; margin:0; color:var(--ink-soft); }
+
+  .lineup-title{
+    font-family:'PT Mono', monospace; font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase;
+    color:var(--ink-soft); margin:0 0 10px;
+  }
+  .lineup-row{
+    display:flex; align-items:center; gap:10px; margin-bottom:8px; font-size:13.5px;
+  }
+  .lineup-name{ width:190px; flex:none; }
+  .lineup-bar-track{ flex:1; height:8px; background:rgba(43,38,32,0.12); border-radius:4px; overflow:hidden; }
+  .lineup-bar{ height:100%; background:var(--red); border-radius:4px; }
+  .lineup-count{ width:26px; text-align:right; font-family:'PT Mono', monospace; color:var(--ink-soft); }
+
+  .verdict-box{
+    margin-top:24px; padding-top:18px; border-top:2px dashed var(--kraft-dark);
+  }
+  .verdict-box p{ font-size:14.5px; line-height:1.7; margin:0 0 12px; }
+  .verdict-box p:last-child{ margin-bottom:0; }
+  .verdict-box b{ color:var(--red); }
+
+  .restart-row{ text-align:center; margin-top:24px; }
+
+  @media (max-width:420px){
+    .folder-body{ padding:22px 16px 26px; }
+    .stamp{ position:static; display:inline-block; transform:rotate(-2deg); margin-bottom:12px; }
+    .case-header{ padding-right:0; }
+    .lineup-name{ width:130px; font-size:12px; }
+  }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="folder">
+    <div class="folder-tab">Архив · финансовые дела</div>
+    <div class="folder-body">
+      <div id="app"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+
+  var EVIDENCE = [
+    {
+      q:'Что вы думаете о тех, у кого много денег?',
+      options:[
+        { text:'Им просто повезло', s:'s4' },
+        { text:'Наверняка пашут 24/7', s:'s2' },
+        { text:'Большие деньги честно не заработать', s:'s2' },
+        { text:'Вот молодцы, тоже так хочу', s:null },
+        { text:'Деньги дают свободу', s:null },
+        { text:'Богатые становятся другими', s:'s5' }
+      ],
+      cat:'Особенно интересно не то, что вы думаете о деньгах. А то, кем вам придётся стать, если их у вас будет много.'
+    },
+    {
+      q:'Что говорили о деньгах в вашей семье?',
+      options:[
+        { text:'Денег нет', s:'s2' },
+        { text:'Не жили богато — нечего начинать', s:'s2' },
+        { text:'Деньги достаются тяжёлым трудом', s:'s2' },
+        { text:'Сначала заработай', s:'s4' },
+        { text:'На себя ещё успеешь потратить', s:'s3' },
+        { text:'Копейка рубль бережёт', s:'s3' },
+        { text:'У нас в семье богатых не было', s:'s5' }
+      ],
+      cat:'Так… часть подозреваемых, похоже, вообще проживает здесь с вашего детства.'
+    },
+    {
+      q:'Деньги неожиданно пришли. Что происходит дальше?',
+      options:[
+        { text:'Хочется сразу что-нибудь купить', s:'s5' },
+        { text:'Начинаю бояться их потерять', s:'s1' },
+        { text:'Срочно закрываю все обязательства', s:'s3' },
+        { text:'Мне трудно потратить их на себя', s:'s4' },
+        { text:'Спокойно распределяю', s:null },
+        { text:'Появляется странное ощущение «слишком хорошо»', s:'s5' }
+      ],
+      cat:'Получить деньги и разрешить им остаться — оказывается, два разных навыка.'
+    },
+    {
+      q:'Представьте: ваш доход завтра увеличился в три раза. Что тревожит первым?',
+      options:[
+        { text:'Ничего. Давайте!', s:null },
+        { text:'Придётся больше работать', s:'s2' },
+        { text:'Появится больше ответственности', s:'s5' },
+        { text:'Родные начнут чего-то ждать', s:'s1' },
+        { text:'Боюсь всё потерять', s:'s1' },
+        { text:'Мне даже сложно представить такую сумму', s:'s5' }
+      ],
+      cat:'Интересно. Деньги ещё не пришли, а проблемы уже приехали. 😹'
+    },
+    {
+      q:'Что вам сложнее всего?',
+      options:[
+        { text:'Просить деньги за свою работу', s:'s4' },
+        { text:'Называть высокую цену', s:'s4' },
+        { text:'Принимать деньги', s:'s4' },
+        { text:'Тратить на себя', s:'s4' },
+        { text:'Сохранять', s:'s1' },
+        { text:'Хотеть больше', s:'s5' },
+        { text:'Не контролировать каждую копейку', s:'s3' }
+      ],
+      cat:'Список подозреваемых почти готов. Осталось посчитать голоса.'
+    }
+  ];
+
+  var SUSPECTS = {
+    s1:{ name:'ПОДОЗРЕВАЕМЫЙ №1 — СТРАХ', quote:'«Деньги, конечно, хочется. Но желательно, чтобы вместе с ними ничего не изменилось».' },
+    s2:{ name:'ПОДОЗРЕВАЕМЫЙ №2 — РОДОВЫЕ УСТАНОВКИ', quote:'«Ваши отношения с деньгами начались задолго до того, как вы заработали первые».' },
+    s3:{ name:'ПОДОЗРЕВАЕМЫЙ №3 — КОНТРОЛЬ', quote:'«Деньги рядом. Но под круглосуточным наблюдением».' },
+    s4:{ name:'ПОДОЗРЕВАЕМЫЙ №4 — «МНЕ НЕЛЬЗЯ / Я НЕ ЗАСЛУЖИЛА»', quote:'«Для других — можно. Для себя сначала нужно предоставить справку о достаточной хорошести».' },
+    s5:{ name:'ПОДОЗРЕВАЕМЫЙ №5 — СТРАХ БОЛЬШИХ ДЕНЕГ', quote:'«Миллион хочется. Но желательно маленький, безопасный и чтобы никто не заметил».' }
+  };
+  var SUSPECT_KEYS = ['s1','s2','s3','s4','s5'];
+
+  var state = { screen:'intro', eIndex:0, selections:[[],[],[],[],[]] };
+  var app = document.getElementById('app');
+
+  function render(){
+    if(state.screen==='intro') renderIntro();
+    else if(state.screen==='evidence') renderEvidence();
+    else if(state.screen==='result') renderResult();
+  }
+
+  function renderIntro(){
+    app.innerHTML =
+      '<div class="stamp">Секретно</div>' +
+      '<div class="case-header">' +
+        '<span class="case-number">Дело № ДЕНЬГИ</span>' +
+        '<h1 class="case-title">Почему они знают ваш адрес,<br>но не заходят?</h1>' +
+        '<p class="case-subtitle">Мини-расследование в 5 уликах</p>' +
+      '</div>' +
+      '<hr class="divider-dashed">' +
+      '<div class="case-field"><b>Особые приметы</b>Приходят, уходят, иногда исчезают при загадочных обстоятельствах.</div>' +
+      '<div class="case-field"><b>Задача расследования</b>Выяснить, почему ваши отношения с деньгами выглядят именно так.</div>' +
+      '<hr class="divider-dashed">' +
+      '<p class="lede">Дальше — 5 улик. В каждой отмечайте всё, что откликается — можно несколько вариантов, можно ни одного. Честность здесь важнее логики.</p>' +
+      '<div class="disclaimer">Это не диагноз и не медицинское заключение — инструмент для самонаблюдения. Читайте с юмором, выводы делайте сами.</div>' +
+      '<button class="btn" id="startBtn">Открыть дело →</button>';
+    document.getElementById('startBtn').addEventListener('click', function(){
+      state.screen='evidence'; state.eIndex=0; state.selections=[[],[],[],[],[]]; render();
+    });
+  }
+
+  function renderEvidence(){
+    var i = state.eIndex;
+    var ev = EVIDENCE[i];
+    var total = EVIDENCE.length;
+    var selected = state.selections[i];
+
+    var ticks = '';
+    for(var t=0;t<total;t++){ ticks += '<div class="ptick' + (t<=i ? ' filled':'') + '"></div>'; }
+
+    var rows = '';
+    ev.options.forEach(function(opt, idx){
+      var isChecked = selected.indexOf(idx) !== -1;
+      rows += '<div class="check-row' + (isChecked?' checked':'') + '" data-idx="'+idx+'">' +
+        '<span class="check-box"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#efe4c8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' +
+        '<span class="check-text">'+opt.text+'</span>' +
+      '</div>';
+    });
+
+    app.innerHTML =
+      '<div class="progress-row">' +
+        '<span class="progress-label">Улика '+(i+1)+' из '+total+'</span>' +
+        '<div class="progress-ticks">'+ticks+'</div>' +
+      '</div>' +
+      '<p class="evidence-label">Улика №'+(i+1)+'</p>' +
+      '<p class="evidence-q">'+ev.q+'</p>' +
+      '<div class="checklist">'+rows+'</div>' +
+      '<div class="cat-note"><span class="paw">🐾</span><b>Комментарий следователя:</b> '+ev.cat+'</div>' +
+      '<button class="btn" id="nextBtn">'+(i<total-1 ? 'Следующая улика →' : 'Закрыть дело →')+'</button>';
+
+    app.querySelectorAll('.check-row').forEach(function(row){
+      row.addEventListener('click', function(){
+        var idx = parseInt(row.getAttribute('data-idx'),10);
+        var arr = state.selections[i];
+        var pos = arr.indexOf(idx);
+        if(pos === -1){ arr.push(idx); row.classList.add('checked'); }
+        else { arr.splice(pos,1); row.classList.remove('checked'); }
+      });
+    });
+
+    document.getElementById('nextBtn').addEventListener('click', function(){
+      if(i < total - 1){ state.eIndex += 1; render(); }
+      else { state.screen = 'result'; render(); }
+    });
+  }
+
+  function computeTally(){
+    var tally = { s1:0, s2:0, s3:0, s4:0, s5:0 };
+    state.selections.forEach(function(sel, ei){
+      sel.forEach(function(optIdx){
+        var s = EVIDENCE[ei].options[optIdx].s;
+        if(s){ tally[s] += 1; }
+      });
+    });
+    return tally;
+  }
+
+  function renderResult(){
+    var tally = computeTally();
+    var maxCount = Math.max.apply(null, SUSPECT_KEYS.map(function(k){ return tally[k]; }));
+    var topKeys = SUSPECT_KEYS.filter(function(k){ return tally[k] === maxCount && maxCount > 0; });
+
+    var heroHtml = '';
+    if(topKeys.length === 0){
+      heroHtml =
+        '<div class="suspect-hero">' +
+          '<span class="suspect-hero-label">Заключение</span>' +
+          '<p class="suspect-hero-name">Явных подозреваемых не обнаружено</p>' +
+          '<p class="suspect-hero-quote">Либо у вас на удивление ровные отношения с деньгами, либо главный свидетель просто не явился на допрос. Взгляните на список ниже — там может найтись зацепка.</p>' +
+        '</div>';
+    } else {
+      topKeys.forEach(function(k){
+        var sus = SUSPECTS[k];
+        heroHtml +=
+          '<div class="suspect-hero">' +
+            '<span class="suspect-hero-label">Главный подозреваемый</span>' +
+            '<p class="suspect-hero-name">'+sus.name+'</p>' +
+            '<p class="suspect-hero-quote">'+sus.quote+'</p>' +
+          '</div>';
+      });
+    }
+
+    var maxPossible = { s1:4, s2:6, s3:4, s4:7, s5:7 };
+    var lineupHtml = '';
+    SUSPECT_KEYS.slice().sort(function(a,b){ return tally[b]-tally[a]; }).forEach(function(k){
+      var sus = SUSPECTS[k];
+      var pct = Math.round((tally[k]/maxPossible[k])*100);
+      lineupHtml += '<div class="lineup-row">' +
+        '<span class="lineup-name">'+sus.name.replace(/ПОДОЗРЕВАЕМЫЙ №\d — /,'')+'</span>' +
+        '<span class="lineup-bar-track"><span class="lineup-bar" style="width:'+pct+'%"></span></span>' +
+        '<span class="lineup-count">'+tally[k]+'</span>' +
+      '</div>';
+    });
+
+    app.innerHTML =
+      '<div class="verdict-stamp">Карточка расследования</div>' +
+      '<h2 class="result-title">Дело № ДЕНЬГИ: результаты</h2>' +
+      '<p class="result-sub">По количеству отметок в вашем деле проходят следующие подозреваемые</p>' +
+      heroHtml +
+      '<hr class="divider-dashed">' +
+      '<p class="lineup-title">Полный список подозреваемых</p>' +
+      lineupHtml +
+      '<div class="verdict-box">' +
+        '<p><b>ВЕРДИКТ КОТА.</b> Дело не закрыто.</p>' +
+        '<p>Этот мини-тест не ставит диагноз и не говорит, «почему у вас нет денег». Он помогает заметить темы, которые могут влиять на ваши отношения с деньгами.</p>' +
+        '<p>Найденную улику можно просто держать в уме — а можно взять и подробно разобрать, что за ней стоит.</p>' +
+      '</div>' +
+      '<div class="restart-row"><button class="btn btn-secondary" id="restartBtn">Открыть дело заново</button></div>';
+
+    document.getElementById('restartBtn').addEventListener('click', function(){
+      state.screen='intro'; state.eIndex=0; state.selections=[[],[],[],[],[]]; render();
+    });
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>
